@@ -43,8 +43,8 @@ function getVal<T>(val: T): T {
 Now the same function works with any data type.
 
 ```ts
-getVal<string>("Hello");
-getVal<number>(10);
+getVal<string>("Hello-world");
+getVal<number>(1078);
 getVal<boolean>(true);
 ```
 
