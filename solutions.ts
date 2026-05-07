@@ -5,7 +5,6 @@ const filterEvenNumbers = (input:number[]) : number[] =>{
 }
 
 
-
 //problem - 2
 const reverseString = (input:string) : string =>{
      
@@ -15,19 +14,14 @@ const reverseString = (input:string) : string =>{
 
 
 //problem - 3
-const checkType = (input:(string|number)):string => {
+type StringOrNumber =  string|number;
+const checkType = (input: StringOrNumber):string => {
     
     if(typeof input === "string"){
         return "String";
-    }
-   
-        return "Number"
-    
-   
-
-    
+    } 
+        return "Number"    
 }
-
 
 
 
@@ -36,8 +30,6 @@ const checkType = (input:(string|number)):string => {
 const getProperty = <T,K extends keyof T>(object:T , key:K ):T[K] =>{
      return object[key];
 }
-
-
 
 
 

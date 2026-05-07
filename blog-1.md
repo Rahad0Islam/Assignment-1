@@ -1,98 +1,132 @@
-# Why `unknown` is Safer Than `any`: Understanding TypeScript's Type Safety
+# `Pick` and `Omit` in TypeScript
 
 ## Introduction
 
-TypeScript's type system is designed to catch bugs before they hit production. Yet, the `any` type essentially disables this safety net, creating what developers call a "type safety hole." Let's explore why `unknown` is the superior choice and how type narrowing keeps your code bulletproof.
+In large TypeScript projects, we often need smaller versions of a large interface. Writing the same properties repeatedly creates duplicate code and makes maintenance difficult.
 
-## The Problem with `any`
+TypeScript provides two useful utility types — `Pick` and `Omit` — to solve this problem.
 
-The `any` type tells TypeScript: "Trust me, I know what I'm doing." But this trust comes at a cost—it bypasses all type checking:
+These utility types help keep code **DRY (Don't Repeat Yourself)**, reusable, and easier to maintain.
 
-```typescript
-function processData(data: any) {
-  console.log(data.toUpperCase()); // No error, but crashes if data is a number
-  return data.length; // No error, but undefined if data is a string
-}
+---
 
-processData(42); // Runtime error: toUpperCase is not a function
-```
+# Master Interface
 
-TypeScript allows any operation on `any`, even nonsensical ones. The error only surfaces at runtime, defeating the purpose of using TypeScript.
-
-## Why `unknown` is the Safe Alternative
-
-The `unknown` type represents values whose type we genuinely don't know yet. Unlike `any`, TypeScript forces us to verify the type before using it:
-
-```typescript
-function processData(data: unknown) {
-  console.log(data.toUpperCase()); // ❌ Error: Object is of type 'unknown'
-  
-  // Must narrow the type first
-  if (typeof data === 'string') {
-    console.log(data.toUpperCase()); // ✅ Works! TypeScript knows it's a string
-    return data.length;
-  }
-  
-  throw new Error('Expected string data');
-}
-```
-
-## Type Narrowing in Action
-
-Type narrowing is the process of refining a broad type (like `unknown`) into something specific. Here are common techniques:
-
-### 1. typeof Guards
-
-```typescript
-function formatValue(value: unknown): string {
-  if (typeof value === 'string') {
-    return value.trim();
-  }
-  if (typeof value === 'number') {
-    return value.toFixed(2);
-  }
-  return String(value);
-}
-```
-
-### 2. instanceof Checks
-
-```typescript
-function handleError(error: unknown) {
-  if (error instanceof Error) {
-    console.error(error.message); // TypeScript knows error has .message
-  } else {
-    console.error('Unknown error occurred');
-  }
-}
-```
-
-### 3. Type Predicates
-
-```typescript
+```ts
 interface User {
-  name: string;
-  email: string;
-}
-
-function isUser(obj: unknown): obj is User {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'name' in obj &&
-    'email' in obj
-  );
-}
-
-function greetUser(data: unknown) {
-  if (isUser(data)) {
-    console.log(`Hello, ${data.name}!`); // Safe access
-  }
+	id: number;
+	name: string;
+	email: string;
+	password: string;
+	role: string;
 }
 ```
 
-## Conclusion
+Instead of creating multiple interfaces manually, we can reuse this main interface.
 
-The `any` type is a tempting shortcut that creates hidden landmines in your codebase. By using `unknown` and type narrowing, you maintain TypeScript's protective guarantees while handling unpredictable data. Your future self—and your team—will thank you when bugs are caught at compile time, not in production.
+---
 
-**Remember:** `any` says "I don't care about types." `unknown` says "I don't know the type yet, but I'll verify it before using it." Choose wisely.
+# `Pick` Utility Type
+
+`Pick` selects only specific properties from an interface.
+
+```ts
+type UserProfile = Pick<User, "name" | "email">;
+```
+
+Result:
+
+```ts
+{
+	name: string;
+	email: string;
+}
+```
+
+### Common Uses
+
+* Profile page
+* Public user information
+
+
+
+`Pick` helps create smaller “slices” of a large interface.
+
+---
+
+# `Omit` Utility Type
+
+`Omit` removes specific properties from an interface.
+
+```ts
+type SafeUser = Omit<User, "password">;
+```
+
+Result:
+
+```ts
+{
+	id: number;
+	name: string;
+	email: string;
+	role: string;
+}
+```
+
+### Common Uses
+
+* API responses
+* Hiding sensitive data
+
+`Omit` is useful when some fields should not be exposed.
+
+---
+
+# Why This Prevents Code Duplication
+
+Without `Pick` and `Omit`, developers often rewrite interfaces manually.
+
+```ts
+interface UserProfile {
+	name: string;
+	email: string;
+}
+```
+
+This creates repeated code.
+
+If the original `User` interface changes, every copied interface must also be updated.
+
+This can cause:
+
+* Duplicate code
+* Maintenance problems
+* Inconsistent types
+* More bugs
+
+---
+
+# How It Keeps Code DRY
+
+`Pick` and `Omit` reuse the original interface instead of rewriting properties.
+
+### Benefits
+
+* Less duplicate code
+* Easier maintenance
+* Better consistency
+* Safer refactoring
+* Cleaner project structure
+
+This makes large TypeScript projects easier to manage.
+
+---
+
+# Conclusion
+
+* `Pick` → Select needed fields
+* `Omit` → Remove unwanted/sensitive fields
+
+These utility types help create specialized versions of a master interface without duplicating code.
+
+Using `Pick` and `Omit` keeps TypeScript code clean, reusable, and DRY.

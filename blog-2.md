@@ -1,132 +1,154 @@
-# `Pick` and `Omit` in TypeScript
+# Generics in TypeScript
 
 ## Introduction
 
-In large TypeScript projects, we often need smaller versions of a large interface. Writing the same properties repeatedly creates duplicate code and makes maintenance difficult.
+In TypeScript, Generics help developers create reusable and scalable code without losing type safety. They allow functions, interfaces, and components to work with multiple data types while still preserving the correct type information.
 
-TypeScript provides two useful utility types — `Pick` and `Omit` — to solve this problem.
-
-These utility types help keep code **DRY (Don't Repeat Yourself)**, reusable, and easier to maintain.
+Instead of creating separate functions for every data type, Generics provide one flexible solution that stays strictly typed regardless of the data structure passed into it.
 
 ---
 
-# Master Interface
+# Problem Without Generics
+
+Without Generics, we often repeat the same logic for different types.
 
 ```ts
-interface User {
-	id: number;
-	name: string;
-	email: string;
-	password: string;
-	role: string;
+function getStr(val: string): string {
+	return val;
+}
+
+function getNum(val: number): number {
+	return val;
 }
 ```
 
-Instead of creating multiple interfaces manually, we can reuse this main interface.
+### Problems
+
+* Same logic repeated
+* Harder to maintain
+* Not scalable for large projects
 
 ---
 
-# `Pick` Utility Type
+# Solution With Generics
 
-`Pick` selects only specific properties from an interface.
-
-```ts
-type UserProfile = Pick<User, "name" | "email">;
-```
-
-Result:
+Generics solve this problem using a placeholder type like `T`.
 
 ```ts
-{
-	name: string;
-	email: string;
+function getVal<T>(val: T): T {
+	return val;
 }
 ```
 
-### Common Uses
+Now the same function works with any data type.
 
-* Profile page
-* Public user information
-* Small UI components
+```ts
+getVal<string>("Hello");
+getVal<number>(10);
+getVal<boolean>(true);
+```
 
-`Pick` helps create smaller “slices” of a large interface.
+Here:
+
+* `T` represents a type placeholder
+* TypeScript automatically preserves the correct type
+
+This means the function stays strictly typed regardless of the data structure passed in.
 
 ---
 
-# `Omit` Utility Type
+# How Generics Keep Functions Strictly Typed
 
-`Omit` removes specific properties from an interface.
-
-```ts
-type SafeUser = Omit<User, "password">;
-```
-
-Result:
+Generics maintain the relationship between input and output types.
 
 ```ts
-{
-	id: number;
-	name: string;
-	email: string;
-	role: string;
+function check<T>(value: T): T {
+	return value;
 }
 ```
 
-### Common Uses
-
-* API responses
-* Frontend user objects
-* Hiding sensitive data
-
-`Omit` is useful when some fields should not be exposed.
-
----
-
-# Why This Prevents Code Duplication
-
-Without `Pick` and `Omit`, developers often rewrite interfaces manually.
+If we pass a string:
 
 ```ts
-interface UserProfile {
-	name: string;
-	email: string;
-}
+check("hello-world");
 ```
 
-This creates repeated code.
+Then:
 
-If the original `User` interface changes, every copied interface must also be updated.
+* Input type = `string`
+* Return type = `string`
 
-This can cause:
+If we pass a number:
 
-* Duplicate code
-* Maintenance problems
-* Inconsistent types
-* More bugs
+```ts
+check(100);
+```
+
+Then:
+
+* Input type = `number`
+* Return type = `number`
+
+The type always stays connected and consistent.
 
 ---
 
-# How It Keeps Code DRY
+# Why Generics Are Useful
 
-`Pick` and `Omit` reuse the original interface instead of rewriting properties.
+Generics make code:
 
-### Benefits
+* Reusable
+* Flexible
+* Strictly typed
+* Easier to maintain
+
+### Benefits in real projects
 
 * Less duplicate code
-* Easier maintenance
-* Better consistency
+* Better scalability
 * Safer refactoring
-* Cleaner project structure
+* Better developer experience
 
-This makes large TypeScript projects easier to manage.
+
+# How Generics Improve Type Safety
+
+Without Generics, developers often use `any`.
+
+```ts
+function getVal(val: any): any {
+	return val;
+}
+```
+
+### Problems with `any`
+
+* Removes type safety
+* Causes runtime errors
+* Harder to debug
+
+### Generics Fix This
+
+Generics keep flexibility without losing safety.
+
+TypeScript always knows:
+
+* Input type
+* Return type
+* Structure of data
+
+This helps prevent unexpected bugs.
 
 ---
 
 # Conclusion
 
-* `Pick` → Select needed fields
-* `Omit` → Remove unwanted fields
+Generics allow developers to build reusable and flexible functions, interfaces, and components while keeping strict type safety.
 
-These utility types help create specialized versions of a master interface without duplicating code.
+### Key Takeaways
 
-Using `Pick` and `Omit` keeps TypeScript code clean, reusable, and DRY.
+* Generics create reusable type-safe code
+* `T` acts as a placeholder type
+* Functions remain strictly typed for all data structures
+* Works with functions, arrays, interfaces, and components
+
+Generics are essential for building scalable and maintainable TypeScript applications.
